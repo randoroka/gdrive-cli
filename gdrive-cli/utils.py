@@ -5,6 +5,7 @@ import os
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
+from googleapiclient.http import MediaFileUpload, MediaIoBaseUpload
 
 # Function to get MIME type from file extension
 def get_mime_type(file_extension):
@@ -158,8 +159,51 @@ def ignored_files(file):
     
     return True
 
+# for resumeable uploads
+def resumable(file_path, file_metadata, parent_id):
 
+    creds = Credentials.from_authorized_user_file("../token.json")
 
+    service = build('drive', 'v3', credentials=creds)
+    media = MediaFileUpload(file_path, chunksize=1024*1024, resumable=True)
+    file_metadata = {'name': os.path.basename(file_path)}
+
+    if parent_id:
+        file_metadata['parents'] = [parent_id]
+
+    request = service.files().create(body=file_metadata, media_body=media, fields='id')
+    response = None
+    while response is None:
+            status, response = request.next_chunk()
+            if status:
+                print(f'Uploaded {int(status.progress() * 100)}%')
+
+  
+def create_folder(file_metadata, parent_id=None):
+ 
+  
+  creds = Credentials.from_authorized_user_file("../token.json")
+  folder_name = file_metadata['name']
+
+  try:
+    # create drive api client
+    service = build("drive", "v3", credentials=creds)
+    file_metadata = {
+        "name": folder_name,
+        "mimeType": "application/vnd.google-apps.folder",
+    }
+    if parent_id:
+        file_metadata['parents'] = [parent_id]
+
+    # pylint: disable=maybe-no-member
+    file = service.files().create(body=file_metadata, fields="id").execute()
+    print(f'Folder ID: "{file.get("id")}".')
+    return file.get("id")
+
+  except HttpError as error:
+    print(f"An error occurred: {error}")
+    return None
+  
 
   
 

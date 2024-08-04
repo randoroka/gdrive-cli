@@ -5,6 +5,7 @@ from search_content import search
 from auth import login, logout
 from modify_local import rename, change_all
 from download import download_file
+from upload import upload
 
 
 @click.group()
@@ -20,6 +21,7 @@ cli.add_command(list_local)
 cli.add_command(rename)
 cli.add_command(change_all)
 cli.add_command(download_file)
+cli.add_command(upload)
 
 
 
