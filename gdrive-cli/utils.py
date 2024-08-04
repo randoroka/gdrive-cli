@@ -163,9 +163,12 @@ def ignored_files(file):
 def resumable(file_path, file_metadata, parent_id):
 
     creds = Credentials.from_authorized_user_file("../token.json")
+    _, extension = os.path.splitext(file_path)
+    mimeType = get_mime_type(extension)
+
 
     service = build('drive', 'v3', credentials=creds)
-    media = MediaFileUpload(file_path, chunksize=1024*1024, resumable=True)
+    media = MediaFileUpload(file_path, chunksize=1024*1024, mimetype=mimeType, resumable=True)
     file_metadata = {'name': os.path.basename(file_path)}
 
     if parent_id:
