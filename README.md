@@ -15,6 +15,7 @@ This project uses a custom Click command named `gdrive` for it to run. `gdrive` 
 - **rename** - Lets you rename a specified file stored locally.
 - **change** - Lets you change the extension of a specified file stored locally.
 - **download** - Lets you download files and folders from Google Drive.
+- **upload** - Lets you upload files or directories and their files
 
 ## Current Status
 
