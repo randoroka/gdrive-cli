@@ -10,8 +10,8 @@ from googleapiclient.http import MediaFileUpload, MediaIoBaseUpload
 from utils import resumable, create_folder, get_mime_type
 
 # uploads files or directories with their files to drive
-#@click.command('push', short_help='Uploads files to Google Drive')
-#@click.argument('file_path', required=False, default=None)
+@click.command('push', short_help='Uploads files to Google Drive')
+@click.argument('file_path', required=False, default=None)
 def upload(file_path):
 
     creds = Credentials.from_authorized_user_file("../token.json")
@@ -50,5 +50,3 @@ def upload(file_path):
                 resumable(full_path, file_metadata, folder_id)
 
         
-
-upload("/Users/Ariel/Desktop/mimepdf.pdf")
