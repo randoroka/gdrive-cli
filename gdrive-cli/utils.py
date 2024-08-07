@@ -1,7 +1,7 @@
 import mimetypes
 import json
 import os
-
+import pathlib
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
@@ -144,17 +144,16 @@ def manual_http_error(status):
     # Return the corresponding error message or a default message
     return error_messages.get(status, f"An HTTP error occurred: {status}")
 
-# files to ignore to not accidentally modify them. 
-# TO DO better handling of files that end in .py and .json and .md and . if it is in the app's directory
+#ensures files in project are not changed
 def ignored_files(file):
-
-    if not os.path.isfile(file):
+    app_dir = pathlib.Path(__file__).parent.resolve()
+    file_path = pathlib.Path(file).resolve()
+    
+    if not os.path.isfile(file_path):
         return False 
-    if file.endswith('.py') or file.endswith('.json'):
+    if file_path.suffix in {'.py', '.json', '.md'} and file_path.parent == app_dir:
         return False
-    if file.startswith('.'):
-        return False
-    if file.endswith('.md'):
+    if file.startswith('.'): #don't rename hidden files 
         return False
     
     return True
