@@ -9,7 +9,7 @@ def rename(old_name, new_name):
     os.rename(old_name, new_name)
 
 # changes extension of all files in directory
-@click.command('change', short_help='List directories in Google Drive')
+@click.command('change', short_help='changes all files to specified extension')
 @click.argument('filter', required=False, default=None)
 def change_all(filter):
    cur_dir = os.getcwd()
@@ -25,4 +25,5 @@ def change_all(filter):
            name, old_ext = file.rsplit('.', 1)
            new_file = name + filter
            os.rename(file, new_file)
-           
+
+rename("m", "c")
