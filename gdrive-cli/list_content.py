@@ -28,7 +28,7 @@ def list(filter):
     
     if files:
         for file in files:
-            print(f'{file.get("name")}, {file.get("id")}')
+            click.echo(f'{file.get("name")}, {file.get("id")}')
    
     
 
@@ -54,7 +54,7 @@ def list_dir(filter):
     
     if directories:
         for directory in directories:
-            print(f'{directory.get("name")}, {directory.get("id")}')
+            click.echo(f'{directory.get("name")}, {directory.get("id")}')
 
 
 #figure out why filter defaults to files in current directory and always displays that.
@@ -65,10 +65,10 @@ def list_local(filter):
     try:
         files = os.listdir(filter)
         for file in files:
-          print(file)
+          click.echo(file)
     
     except FileNotFoundError:
-        print(f"Error: The specified path '{filter}' does not exist.")
+        click.echo(f"Error: The specified path '{filter}' does not exist.")
 
 
 

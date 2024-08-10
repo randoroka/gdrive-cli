@@ -22,9 +22,9 @@ def search(id, name, ext):
 
         item = find_id(id)
         if item["error_message"]:
-            print(f"Error: {item['error_message']}")
+            click.echo(f"Error: {item['error_message']}")
 
-        print(item["file"]["name"])
+        click.echo(item["file"]["name"])
 
     if name:
         query = f"name='{name}'"
@@ -34,7 +34,7 @@ def search(id, name, ext):
             return
             
         for item in items:
-            print(f'{item.get("name")}, {item.get("id")}')
+            click.echo(f'{item.get("name")}, {item.get("id")}')
 
 
     if ext:
@@ -45,9 +45,9 @@ def search(id, name, ext):
         query = f"mimeType='{mime}'"
         items = list_files(query)
         for item in items:
-            print(f'{item.get("name")}, {item.get("id")}')
+            click.echo(f'{item.get("name")}, {item.get("id")}')
         else:
-            print("Nothing with that extension type found in drive.")
+            click.echo("Nothing with that extension type found in drive.")
     
 
 

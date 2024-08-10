@@ -33,7 +33,7 @@ def download_file(filter):
       results = service.files().list(q=query, fields="files(id, name)").execute()
       items = results.get('files', [])
       if not items:
-            print("No files found in the folder.")
+            click.echo("No files found in the folder.")
             return
 
             # Download each file in the folder
@@ -42,7 +42,7 @@ def download_file(filter):
          file_id = item['id']
          file_name = item['name']
          file_path = os.path.join(folder_name, file_name)
-         print(f"Downloading file: {file_name}")
+         click.echo(f"Downloading file: {file_name}")
 
          request = service.files().get_media(fileId=file_id)
          fh = io.BytesIO()
@@ -50,11 +50,11 @@ def download_file(filter):
          done = False
          while done is False:
                 status, done = downloader.next_chunk()
-                print(f"Download {int(status.progress() * 100)}%.")
+                click.echo(f"Download {int(status.progress() * 100)}%.")
         # Write the file to disk
          with open(file_path, 'wb') as f:
             f.write(fh.getvalue())
-         print(f"File downloaded as: {file_name}")
+         click.echo(f"File downloaded as: {file_name}")
       return
 
     
@@ -68,12 +68,12 @@ def download_file(filter):
     done = False
     while done is False:
       status, done = downloader.next_chunk()
-      print(f"Download {int(status.progress() * 100)}.")
+      click.echo(f"Download {int(status.progress() * 100)}.")
 
 
     with open(file_name, 'wb') as f:
       f.write(file.getvalue())
 
   except HttpError as error:
-    print(f"An error occurred: {error}")
+    click.echo(f"An error occurred: {error}")
     file = None

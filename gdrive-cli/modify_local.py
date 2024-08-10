@@ -2,10 +2,14 @@ import click
 import os
 from utils import ignored_files
 
-@click.command('rename', short_help='List directories in Google Drive')
+#renames files and directories 
+@click.command('rename', short_help='renames')
 @click.argument('old_name')
 @click.argument('new_name')
-def rename(old_name, new_name):
+@click.option('--d', is_flag=True, help='Indicate if the target is a directory')
+def rename(old_name, new_name, d):
+    if d:
+        os.renames(old_name, new_name)
     os.rename(old_name, new_name)
 
 # changes extension of all files in directory
@@ -26,4 +30,3 @@ def change_all(filter):
            new_file = name + filter
            os.rename(file, new_file)
 
-rename("m", "c")

@@ -46,11 +46,11 @@ def logout():
                 headers={'content-type': 'application/x-www-form-urlencoded'}
             )
             if revoke.status_code == 200:
-                print("Tokens revoked successfully.")
+                click.echo("Tokens revoked successfully.")
             else:
-                print("Error revoking tokens.")
+                click.echo("Error revoking tokens.")
         os.remove("token.json")
-        print("Logged out successfully.")
+        click.echo("Logged out successfully.")
     else:
-        print("No user is currently logged in.")
+        click.echo("No user is currently logged in.")
 
