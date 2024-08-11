@@ -1,13 +1,11 @@
 import os
-import io
-import json
 import click
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseUpload
-from utils import resumable, create_folder, get_mime_type
+from gdrive_cli.utils import resumable, create_folder, get_mime_type
 
 # uploads files or directories with their files to drive
 @click.command('push', short_help='Uploads files to Google Drive')

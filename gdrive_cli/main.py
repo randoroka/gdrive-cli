@@ -1,11 +1,11 @@
+# gdrive_cli/main.py
 import click
-import sys
-from list_content import list, list_dir, list_local
-from search_content import search
-from auth import login, logout
-from modify_local import rename, change_all
-from download import download_file
-from upload import upload
+from gdrive_cli.list_content import list, list_dir, list_local
+from gdrive_cli.search_content import search
+from gdrive_cli.auth import login, logout
+from gdrive_cli.modify_local import rename, change_all
+from gdrive_cli.download import download_file
+from gdrive_cli.upload import upload
 
 
 @click.group()

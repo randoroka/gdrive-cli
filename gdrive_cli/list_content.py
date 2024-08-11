@@ -4,8 +4,8 @@ import os
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
-from auth import SCOPES, login 
-from utils import get_mime_type, list_files, list_dirs
+from gdrive_cli.auth import SCOPES, login 
+from gdrive_cli.utils import get_mime_type, list_files, list_dirs
 
 #allows a user to list all contents of their drive or specify by file type like pdf or png
 #can take an arguement for user to specify file type 

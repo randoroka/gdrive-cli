@@ -4,7 +4,7 @@ import os
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
-from utils import get_mime_type, list_files, list_dirs, find_id
+from gdrive_cli.utils import get_mime_type, list_files, list_dirs, find_id
 
 
 #searches google drive by file/diretory name, file/directory id, and extension 

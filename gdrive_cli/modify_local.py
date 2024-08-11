@@ -1,6 +1,6 @@
 import click
 import os
-from utils import ignored_files
+from gdrive_cli.utils import ignored_files
 
 #renames files and directories 
 @click.command('rename', short_help='renames')
