@@ -2,6 +2,7 @@ import mimetypes
 import json
 import os
 import pathlib
+import click
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
@@ -33,7 +34,7 @@ def get_drive_mime(file_extension):
   return None 
 
 def list_files(query):
-    creds = Credentials.from_authorized_user_file("token.json")
+    creds = Credentials.from_authorized_user_file("../token.json")
     files = []
 
     try:
@@ -55,15 +56,12 @@ def list_files(query):
             page_token = response.get("nextPageToken", None)
             if page_token is None:
                 break
+        return files
 
     except HttpError as error:
-        print(f"An error occurred: {error}")
-        files = None
-
-    return files
-
+        raise RuntimeError(f"An HTTP error occurred: {error}")
 def list_dirs(query):
-    creds = Credentials.from_authorized_user_file("token.json")
+    creds = Credentials.from_authorized_user_file("../token.json")
     directories = []
 
     try:
@@ -85,15 +83,14 @@ def list_dirs(query):
             page_token = response.get("nextPageToken", None)
             if page_token is None:
                 break
+        return directories
+
 
     except HttpError as error:
-        print(f"An error occurred: {error}")
-        directories = None
-
-    return directories
-
+        raise RuntimeError(f"An error occurred: {error}")
+        
 def find_id(id):
-  creds = Credentials.from_authorized_user_file("token.json")
+  creds = Credentials.from_authorized_user_file("../token.json")
 
   try:
     # Create Drive API client
@@ -164,21 +161,25 @@ def resumable(file_path, file_metadata, parent_id):
     creds = Credentials.from_authorized_user_file("../token.json")
     _, extension = os.path.splitext(file_path)
     mimeType = get_mime_type(extension)
+    
+    try:
+        service = build('drive', 'v3', credentials=creds)
+        media = MediaFileUpload(file_path, chunksize=1024*1024, mimetype=mimeType, resumable=True)
+        file_metadata = {'name': os.path.basename(file_path)}
 
+        if parent_id:
+            file_metadata['parents'] = [parent_id]
 
-    service = build('drive', 'v3', credentials=creds)
-    media = MediaFileUpload(file_path, chunksize=1024*1024, mimetype=mimeType, resumable=True)
-    file_metadata = {'name': os.path.basename(file_path)}
-
-    if parent_id:
-        file_metadata['parents'] = [parent_id]
-
-    request = service.files().create(body=file_metadata, media_body=media, fields='id')
-    response = None
-    while response is None:
+        request = service.files().create(body=file_metadata, media_body=media, fields='id')
+        response = None
+        while response is None:
             status, response = request.next_chunk()
             if status:
                 print(f'Uploaded {int(status.progress() * 100)}%')
+
+    except HttpError as error:
+        raise RuntimeError(f"An HTTP error occurred: {error}")
+
 
   
 def create_folder(file_metadata, parent_id=None):

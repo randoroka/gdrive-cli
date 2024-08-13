@@ -8,9 +8,23 @@ from gdrive_cli.utils import ignored_files
 @click.argument('new_name')
 @click.option('--d', is_flag=True, help='Indicate if the target is a directory')
 def rename(old_name, new_name, d):
-    if d:
-        os.renames(old_name, new_name)
-    os.rename(old_name, new_name)
+    
+    if not os.path.exists(old_name):
+        click.echo(click.style("Error: ", bold=True) + f" The file or directory '{old_name}' does not exist.")
+        return
+
+    if os.path.exists(new_name):
+        click.echo(click.style("Error: ", bold=True) + f" The file or directory '{new_name}' already exists.")
+        return
+
+    try:
+        if d:
+            os.renames(old_name, new_name)
+        os.rename(old_name, new_name)
+    except PermissionError:
+        click.echo(click.style("Error:", bold=True) + " Permission denied to change name. Check file/directory permissions.")
+    except Exception as e:
+        click.echo(click.style("Error:", bold=True) + f" Unexpected error: {e}")
 
 # changes extension of all files in directory
 @click.command('change', short_help='changes all files to specified extension')
@@ -28,5 +42,10 @@ def change_all(filter):
 
            name, old_ext = file.rsplit('.', 1)
            new_file = name + filter
-           os.rename(file, new_file)
+           try:
+               os.rename(file, new_file)
+           except PermissionError:
+               click.echo(click.style("Error:", bold=True) + " Permission denied to change name. Check file/directory permissions.")
+           except Exception as e:
+               click.echo(click.style("Error:", bold=True) + f" Unexpected error: {e}")
 

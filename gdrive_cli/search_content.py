@@ -23,6 +23,7 @@ def search(id, name, ext):
         item = find_id(id)
         if item["error_message"]:
             click.echo(f"Error: {item['error_message']}")
+            return
 
         click.echo(item["file"]["name"])
 
@@ -44,8 +45,9 @@ def search(id, name, ext):
             return
         query = f"mimeType='{mime}'"
         items = list_files(query)
-        for item in items:
-            click.echo(f'{item.get("name")}, {item.get("id")}')
+        if items:
+            for item in items:
+                click.echo(f'{item.get("name")}, {item.get("id")}')
         else:
             click.echo("Nothing with that extension type found in drive.")
     

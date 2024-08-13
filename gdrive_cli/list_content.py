@@ -1,6 +1,7 @@
 import google.auth
 import click
 import os 
+import requests
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2.credentials import Credentials
@@ -13,24 +14,26 @@ from gdrive_cli.utils import get_mime_type, list_files, list_dirs
 @click.argument('filter', required=False, default=None)
 def list(filter):
 
-    #specifies query to pass into list function
+    if filter not in [None, "all"]:
+        click.echo(click.style("Error:", bold=True) + " Argument not recognized")
+        return
+
     if filter is None:
         query = "'root' in parents"
-
-    if filter == "all":
+    elif filter == "all":
         query = ""
 
-    files = list_files(query)
-
-    if not files:
-        click.echo("No files found or an error occurred.")
-        return
-    
-    if files:
-        for file in files:
-            click.echo(f'{file.get("name")}, {file.get("id")}')
-   
-    
+    try:
+        files = list_files(query)
+        if files:
+            for file in files:
+                click.echo(f'{file.get("name")}, {file.get("id")}')
+        else:
+            click.echo(click.style("Error:", bold=True) + " No files found")
+    except RuntimeError as error:
+        click.echo(click.style("Error:", bold=True) + f" {error}")
+    except Exception as e:
+        click.echo(click.style("Error:", bold=True) + f"{e}")
 
 
 
@@ -45,30 +48,20 @@ def list_dir(filter):
         query = "mimeType='application/vnd.google-apps.folder'"
     if filter is None:#the default, if arguement all is not given, only lists root folders and not subfolders
         query = "mimeType='application/vnd.google-apps.folder' and 'root' in parents"
-
-    directories = list_dirs(query)
-
-    if not directories:
-        click.echo("No directories found or an error occurred.")
-        return
     
-    if directories:
-        for directory in directories:
-            click.echo(f'{directory.get("name")}, {directory.get("id")}')
-
-
-#figure out why filter defaults to files in current directory and always displays that.
-@click.command('ls', short_help='list what user specifies in their drive')
-@click.argument('filter', required=False, default="")
-def list_local(filter):
-
     try:
-        files = os.listdir(filter)
-        for file in files:
-          click.echo(file)
-    
-    except FileNotFoundError:
-        click.echo(f"Error: The specified path '{filter}' does not exist.")
+        directories = list_dirs(query)
+        if directories:
+            for directory in directories:
+                click.echo(f'{directory.get("name")}, {directory.get("id")}')
+        else:
+            click.echo(click.style("Error: ", bold=True) + " No files found")
+    except RuntimeError as error:
+        click.echo(click.style("Error: ", bold=True) + f" {error}")
+    except Exception as e:
+        click.echo(click.style("Error: ", bold=True) + f"{e}")
+
+
 
 
 

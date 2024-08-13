@@ -1,6 +1,8 @@
 import os.path
 import requests 
 import click
+import time
+import json
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -17,8 +19,8 @@ SCOPES = ["https://www.googleapis.com/auth/drive.metadata.readonly", "https://ww
 def login():
 
   creds = None
-  if os.path.exists("token.json"):
-    creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+  if os.path.exists("../token.json"):
+    creds = Credentials.from_authorized_user_file("../token.json", SCOPES)
   # If there are no (valid) credentials available, let the user log in.
   if not creds or not creds.valid:
     credentials_path = input("Enter the path to your credentials.json file: ")
@@ -30,15 +32,15 @@ def login():
       )
       creds = flow.run_local_server(port=0)
     # Save the credentials for the next run
-    with open("token.json", "w") as token:
+    with open("../token.json", "w") as token:
       token.write(creds.to_json())
 
 
   
 @click.command('logout', short_help='logout from the account logged in with')
 def logout():
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    if os.path.exists("../token.json"):
+        creds = Credentials.from_authorized_user_file("../token.json", SCOPES)
         if creds and creds.refresh_token:
             revoke = requests.post(
                 'https://oauth2.googleapis.com/revoke',
@@ -49,8 +51,21 @@ def logout():
                 click.echo("Tokens revoked successfully.")
             else:
                 click.echo("Error revoking tokens.")
-        os.remove("token.json")
+        os.remove("../token.json")
         click.echo("Logged out successfully.")
     else:
         click.echo("No user is currently logged in.")
+
+def check_login():
+    if not os.path.exists("../token.json"):
+        print("3rd")
+        raise click.UsageError("You must login first. Use `gdrive login`.")
+    
+
+    # check if token is exipred 
+    creds = Credentials.from_authorized_user_file("../token.json")
+    """ with open("../token.json", 'r') as token_file:
+        token_data = json.load(token_file)
+        if token_data['expiry'] < time.time():
+            raise click.UsageError("Token expired. Please login again using `gdrive login`.") """
 

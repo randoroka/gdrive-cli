@@ -9,11 +9,12 @@ from google.oauth2.credentials import Credentials
 
 
 #TO DO download by name also, not just id. may have to create func in utils that converts id to name and returns name
-@click.command('download', short_help='list what user specifies in their drive')
+# only downloads folders 
+@click.command('pull', short_help='list what user specifies in their drive')
 @click.argument('filter', required=False, default=None)
 def download_file(filter):
   
-  creds = Credentials.from_authorized_user_file("token.json")
+  creds = Credentials.from_authorized_user_file("../token.json")
 
   try:
     # create drive api client
@@ -33,7 +34,7 @@ def download_file(filter):
       results = service.files().list(q=query, fields="files(id, name)").execute()
       items = results.get('files', [])
       if not items:
-            click.echo("No files found in the folder.")
+            click.echo(click.style("Error:", bold=True) + "No files found in the folder.")
             return
 
             # Download each file in the folder
@@ -57,23 +58,9 @@ def download_file(filter):
          click.echo(f"File downloaded as: {file_name}")
       return
 
-    
-
-    # pylint: disable=maybe-no-member
-    request = service.files().get_media(fileId=file_id)
-    print(request)
-    file = io.BytesIO()
-    downloader = MediaIoBaseDownload(file, request)
-
-    done = False
-    while done is False:
-      status, done = downloader.next_chunk()
-      click.echo(f"Download {int(status.progress() * 100)}.")
-
-
-    with open(file_name, 'wb') as f:
-      f.write(file.getvalue())
-
   except HttpError as error:
-    click.echo(f"An error occurred: {error}")
+    click.echo(click.style("Error:", bold=True) + f"{error}")
     file = None
+  except Exception as e:
+     click.echo(click.style("Error: ", bold=True) + f"{e}")
+    
