@@ -15,8 +15,8 @@ from gdrive_cli.utils import get_mime_type, list_files, list_dirs, find_id
 def search(id, name, ext):
 
     if not (id or name or ext):
-        click.echo("You must specify at least one of --id, --name, or --ext")
-        return # try ctx.exit
+        click.echo(click.style("Error: ", bold=True) + "You must specify at least one of --id, --name, or --ext")
+        return 
 
     if id:
 
@@ -31,7 +31,7 @@ def search(id, name, ext):
         query = f"name='{name}'"
         items = list_files(query)
         if not items:
-            click.echo("Nothing found matching name")
+            click.echo(click.style("Error: ", bold=True) + "Nothing found matching name")
             return
             
         for item in items:
@@ -41,7 +41,7 @@ def search(id, name, ext):
     if ext:
         mime = get_mime_type(ext)
         if ext is not None and mime is None:
-            click.echo("Extension type not recognized")
+            click.echo(click.style("Error: ", bold=True) + "Extension type not recognized")
             return
         query = f"mimeType='{mime}'"
         items = list_files(query)
@@ -49,7 +49,7 @@ def search(id, name, ext):
             for item in items:
                 click.echo(f'{item.get("name")}, {item.get("id")}')
         else:
-            click.echo("Nothing with that extension type found in drive.")
+            click.echo(click.style("Error: ", bold=True) + "Nothing with that extension type found in drive.")
     
 
 

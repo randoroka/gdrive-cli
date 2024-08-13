@@ -6,6 +6,7 @@ from gdrive_cli.auth import login, logout, check_login
 from gdrive_cli.modify_local import rename, change_all
 from gdrive_cli.download import download_file
 from gdrive_cli.upload import upload
+from gdrive_cli.modify_drive import delete_file
 
 
 def check_login_required(ctx, command_name):
@@ -27,6 +28,7 @@ cli.add_command(rename)
 cli.add_command(change_all)
 cli.add_command(download_file)
 cli.add_command(upload)
+cli.add_command(delete_file)
 
 
 
